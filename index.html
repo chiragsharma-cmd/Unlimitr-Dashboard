@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unlimitr Analytics Dashboard</title>
+  <!-- Google Fonts for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+  <!-- Local Assets -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/logo.png" alt="Unlimitr" style="height: 30px; width: auto; display: block; margin-right: 2px;">
+        <span class="logo-sub">analytics</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a href="#" class="menu-item active" data-view="overview">
+          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
+          </svg>
+          Overview
+        </a>
+        <a href="#" class="menu-item" data-view="nc">
+          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          New Users
+        </a>
+        <a href="#" class="menu-item" data-view="rc">
+          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.22" />
+          </svg>
+          Returning Users
+        </a>
+        <a href="#" class="menu-item" data-view="eng">
+          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Engagement
+        </a>
+        <a href="#" class="menu-item" data-view="app">
+          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          Unlimitr App
+        </a>
+        <a href="#" class="menu-item" data-view="app_profile"
+          style="padding-left: 36px; font-size: 13px; opacity: 0.85; margin-top: -2px; margin-bottom: 2px;">
+          <span
+            style="display: inline-block; width: 5px; height: 5px; background-color: currentColor; border-radius: 50%; margin-right: 12px; margin-left: 4px; opacity: 0.5;"></span>
+          App Profile
+        </a>
+        <a href="/landing_page_funnel" class="menu-item" data-view="landing_funnel">
+          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Landing Page Funnel
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="/upload_data" id="uploadLink"
+          style="text-decoration: underline; color: var(--accent); font-weight: 500; font-size: 13.5px; cursor: pointer; display: block; text-align: center; padding: 10px 0;">
+          Upload all data
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Header -->
+      <header class="main-header">
+        <div class="header-breadcrumb">
+          <span class="crumb-parent">Dashboard</span>
+          <span class="crumb-separator">/</span>
+          <span class="crumb-active" id="crumb">overview</span>
+        </div>
+
+        <!-- Dashboard Filters & Controls -->
+        <div class="header-controls">
+          <div class="filter-group">
+            <label for="platSel">Platform</label>
+            <select id="platSel" class="styled-select">
+              <option value="ALL">All Platforms (App + Web)</option>
+              <option value="APP">All Mobile Apps (Android + iOS)</option>
+              <option value="ANDROID">Android</option>
+              <option value="IOS">iOS</option>
+              <option value="WEB">Web</option>
+            </select>
+          </div>
+
+          <div class="control-separator"></div>
+
+          <div class="period-pills">
+            <button class="pill active" id="p-mtd" data-period="MTD">MTD</button>
+            <button class="pill" id="p-wtd" data-period="WTD">WTD</button>
+            <button class="pill" id="p-cust" data-period="CUSTOM">Custom</button>
+          </div>
+
+          <div class="custom-date-range hidden" id="customDates">
+            <input type="date" id="dFrom" class="date-input">
+            <span class="date-sep">to</span>
+            <input type="date" id="dTo" class="date-input">
+          </div>
+
+          <div class="control-separator"></div>
+
+          <div class="period-pills" id="viewModeGroup" style="gap: 2px;">
+            <button class="pill active" id="vm-agg" data-viewmode="AGGREGATED"
+              style="font-size: 12px; padding: 5px 10px;">Aggregated</button>
+            <button class="pill" id="vm-day" data-viewmode="DAY_LEVEL" style="font-size: 12px; padding: 5px 10px;">Day
+              Level</button>
+          </div>
+
+          <div class="control-separator"></div>
+
+          <button class="pill compare-pill active" id="p-cmp">
+            Compare: <span class="compare-status">On</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Banner and Dynamic Content Views -->
+      <div class="content-body">
+
+        <!-- Metric Range Label -->
+        <div class="range-display-container">
+          <span class="range-label" id="rangeLabel"></span>
+        </div>
+
+        <!-- View containers -->
+        <div id="overview-view" class="view-panel"></div>
+        <div id="detail-view" class="view-panel hidden"></div>
+        <div id="upload-view" class="view-panel hidden"></div>
+        <div id="app-view" class="view-panel hidden"></div>
+        <div id="app-profile-view" class="view-panel hidden"></div>
+        <div id="landing-funnel-view" class="view-panel hidden"></div>
+      </div>
+
+      <footer class="app-footer" id="foot"></footer>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Logic -->
+  <script src="./app.js?v=20260909_app_day_level_pivot_v53"></script>
+</body>
+
+</html>
